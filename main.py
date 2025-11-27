@@ -1,12 +1,30 @@
 from fastapi import FastAPI
 from banco import cursos
-
+from models.curso import Curso
+import uvicorn
 
 app = FastAPI()
 
+@app.get('/cursos')
+def curso():    
+    return cursos
+
+
+@app.get('/cursos/{curso_id}')
+def get_curso(curso_id: int):
+    if curso_id in cursos.keys():
+        curso = cursos[curso_id]
+        return curso
+    else:
+        return 'Não existe o curso com o id informado. Informe um curso_id válido.'
+
+@app.post('/curso')
+def post_curso(curso: Curso):
+    if curso.id not in cursos.keys():
+        curso[curso.id] = curso
+        return curso
+    else:
+        return 'Já existe um curso cadastrado com este id.'
 
 if __name__ == "__main__":
-    app.run()
-    # import uvicorn
-
-    # uvicorn.run("main:app", host="0.0.0.0", port=8000, debug=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
